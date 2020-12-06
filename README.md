@@ -35,7 +35,7 @@ Example: 9,11
 * High - temperature (in C) during a day
 * Low - temperature (in C) during a night
 * Pause - temperature (in C) used when windows are open or during Pause mode (antifreeze)
-* Precision - precission of sensor or valve set point (in C)
+* Precision - precision of sensor or valve set point (in C) - this parameter prevent too frequent changes  and adds kind of histeresis
 * Max shift - highest acceppted difference between set point and target temperatur (High/Low)
 
 Example: 21.0,20.0,5.0,0.5,2.0
@@ -57,6 +57,14 @@ Example: 10,1,10,90
 * C - TRV Control mode - 1 - set point, 2 - internal TRV sensor temperature value adjustment, 3 - internal TRV sensor temperature value replacement
 
 Example: 0.9,0.1,0.2,0,1,1
+
+## Thermostat modes
+* Off - virtual thermostat is not controlling TRV devices
+* Normal - control TRV to achive defined higher temperture
+* Economy - control TRV to achive defined lower temperture
+* Pause - sets on all TRVs antifreeze temperture
+* 3x Off - reload internal values from user variable - after first "Off" update user variable (i.e. "Integral")
+* 3x Pause - restore default internal values
 
 ## TODO:
 - open window pause
