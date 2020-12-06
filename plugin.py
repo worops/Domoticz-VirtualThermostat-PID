@@ -7,7 +7,7 @@ Author: Logread, Worops
 Version: 0.0.1 (November 24, 2020) - see history.txt for versions history
 """
 """
-<plugin key="SVTP" name="Smart Virtual Thermostat with PID" author="worops" version="0.0.1" wikilink="" externallink="">
+<plugin key="SVTP" name="Domoticz Virtual Thermostat with PID" author="worops" version="0.0.1" wikilink="" externallink="">
     <description>
         <h2>Smart Virtual Thermostat with PID</h2><br/>
     </description>
@@ -15,7 +15,7 @@ Version: 0.0.1 (November 24, 2020) - see history.txt for versions history
         <param field="Mode1" label="Inside Temperature Sensors (csv list of idx)" width="100px" required="true" default=""/>
         <param field="Mode2" label="Open Window Sensors (csv list of idx)" width="100px" required="false" default=""/>
         <param field="Mode3" label="Thermostat Radiator Valves (csv list of idx)" width="100px" required="true" default=""/>
-        <param field="Mode4" label="High/Low/Pause/Precision Temperatures" width="200px" required="true" default="21,20,5,0.5,2"/>
+        <param field="Mode4" label="High/Low/Pause/Precision/Max shift Temperatures" width="200px" required="true" default="21,20,5,0.5,2"/>
         <param field="Mode5" label="Calc. interval, Pause On delay, Pause Off delay, Sensor Timeout (all in minutes)" width="200px" required="true" default="10,1,10,90"/>
         <param field="Mode6" label="PID Params P/I/D/Debug/E/C" width="200px" required="true" default="0.9,0.10,0.2,1,1,1"/>
     </params>
