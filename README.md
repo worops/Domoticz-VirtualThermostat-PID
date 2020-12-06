@@ -5,19 +5,19 @@ Smart Virtual Thermostat with PID python plugin for Domoticz home automation sys
 
 Inspired by SmartVirtualThermostat https://www.domoticz.com/wiki/Plugins/Smart_Virtual_Thermostat.html
 
-An internal temeperature sensor is used to control a smart thermostatic radiator valve.  using PID regulator.
+An internal temperature sensor is used to control a smart thermostatic radiator valve.  using a PID regulator.
 
 Possible control modes:
 - changing a TRV set point temperature
-- changing an interlnal TRV temperature sensor value adjustment (not tested)
-- replacing an internal TRV temperature sensor values by an additional sensor value (not implmented)
+- changing an internal TRV temperature sensor value adjustment (not tested)
+- replacing an internal TRV temperature sensor values by an additional sensor value (not implemented)
 
 Current code was tested with Danfoss Living Connect Z-Wave (014G0013) and Xiaomi Mi ZigBee Temperature and Humidity Sensor WSDCG6Q01LM
 
 ## Parameters
 
 ### Inside Temperature Sensors (csv list of idx)
-List of all temperature sensors installed in the controlled room. 
+List of all temperature sensors installed in the controlled room. An average is caluclated.
 
 Example: 4,5
 
@@ -43,7 +43,7 @@ Example: 21.0,20.0,5.0,0.5,2.0
 ### Calc. interval, Pause On delay, Pause Off delay, Sensor Timeout (all in minutes):
 * Calc. interval - time between calculation of PID shift
 * Pause On delay - time between opening a window and virtual thermostat switching to Pause mode
-* Pause Off delay - time between closing a window and virtual thermostat switching  to previous mode (Normal/Economic)
+* Pause Off delay - time between closing a window and virtual thermostat switching  to previous mode (Normal/Economic)
 * Sensor Timeout - when temperature sensors are not responding - virtual thermostat will use only an internal TRV temperature sensor (not implemented)
 
 Example: 10,1,10,90
@@ -54,6 +54,12 @@ Example: 10,1,10,90
 * Kd - differential factor
 * Debug - 1/0 debug logging on/off
 * E - shift calculation mode: 1 - PID, 2 - simple delta
-* C - TRV Control mode - 1 - set point, 2 - internal TRV sensor temperatur value adjustment, 3 - internal TRV sensor temperatur value replacement
+* C - TRV Control mode - 1 - set point, 2 - internal TRV sensor temperature value adjustment, 3 - internal TRV sensor temperature value replacement
 
 Example: 0.9,0.1,0.2,0,1,1
+
+## TODO:
+- open window pause
+- TRV control modes 2 and 3
+- Sensor Timeout
+- Multiple temperature sensors - min/max/avg mode - currently only avg
