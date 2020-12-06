@@ -17,13 +17,19 @@ Current code was tested with Danfoss Living Connect Z-Wave (014G0013) and Xiaomi
 ## Parameters
 
 ### Inside Temperature Sensors (csv list of idx)
-List of all temperature sensors installed in the controlled room. Example: 4,5
+List of all temperature sensors installed in the controlled room. 
+
+Example: 4,5
 
 ### Open Window Sensors (csv list of idx)
-List of all open window sensors installed in the controlled room. Example: 6
+List of all open window sensors installed in the controlled room. 
+
+Example: 6
 
 ### Thermostat Radiator Valves (csv list of idx)
-List of all TRV installed in the controlled room. Example: 9,11
+List of all TRV installed in the controlled room. 
+
+Example: 9,11
 
 ### High/Low/Pause/Precision/Max shift Temperatures (csv list of values)
 * High - temperature (in C) during a day
