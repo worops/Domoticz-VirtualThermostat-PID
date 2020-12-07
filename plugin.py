@@ -484,7 +484,7 @@ class BasePlugin:
             v_data = self.get_valve_data(i_trv_dev)
             
             if force is True or abs(temp - v_data[0]) >= self.prec_temp: # or abs(shift - v_data[1]) > self.prec_temp:
-                domoticz.Log("set_target_temp - idx {} c_temp {} n_temp {} c_shift {} n_shift {} prec {}".format(i_trv_dev, v_data[0], temp, v_data[1], shift, self.prec_temp))
+                domoticz.Log("set_target_temp - idx {} c_stp {} c_shift {} targ {} shift {} prec {} trv_mode {}".format(i_trv_dev, v_data[0], v_data[1], temp, shift, self.prec_temp, self.trv_control))
                 self.set_valve_temp(i_trv_dev, target_temp=temp, shift_temp=shift)
                 max_next_update_time = v_data[2]
             
