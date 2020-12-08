@@ -18,7 +18,7 @@ Plugin creates a new device
 
 ![Device](https://user-images.githubusercontent.com/74839419/101463532-d1c3f200-393d-11eb-8ec5-b9ee874c3af2.png)
 
-Example of timers. Pause is applied once a week for 10 minutes to close a valve regulary.
+Example of timers. Pause is applied once a week for 10 minutes to close a valve regularly.
 
 ![Timers](https://user-images.githubusercontent.com/74839419/101463492-c670c680-393d-11eb-911e-8d8c8d6e7bbd.png)
 
