@@ -48,7 +48,7 @@ Example: 9,11
 * Low - temperature (in C) during a night
 * Pause - temperature (in C) used when windows are open or during Pause mode (antifreeze)
 * Precision - precision of sensor or valve set point (in C) - this parameter prevent too frequent changes  and adds kind of histeresis
-* Max shift - highest acceppted difference between set point and target temperatur (High/Low)
+* Max shift - highest accepted difference between set point and target temperatur (High/Low)
 
 Example: 21.0,20.0,5.0,0.5,2.0
 
