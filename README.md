@@ -14,6 +14,18 @@ Possible control modes:
 
 Current code was tested with Danfoss Living Connect Z-Wave (014G0013) and Xiaomi Mi ZigBee Temperature and Humidity Sensor WSDCG6Q01LM
 
+Plugin creates a new device
+
+![Device](https://user-images.githubusercontent.com/74839419/101463532-d1c3f200-393d-11eb-8ec5-b9ee874c3af2.png)
+
+Example of timers. Pause is applied once a week for 10 minutes to close a valve regulary.
+
+![Timers](https://user-images.githubusercontent.com/74839419/101463492-c670c680-393d-11eb-911e-8d8c8d6e7bbd.png)
+
+Example of plugin settings
+
+![Settings](https://user-images.githubusercontent.com/74839419/101463418-ad681580-393d-11eb-961a-0f9b63df3d25.png)
+
 ## Parameters
 
 ### Inside Temperature Sensors (csv list of idx)
