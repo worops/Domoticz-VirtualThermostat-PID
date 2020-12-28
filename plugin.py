@@ -15,8 +15,8 @@ Version: 0.0.1 (November 24, 2020) - see history.txt for versions history
         <param field="Mode1" label="Inside Temperature Sensors (csv list of idx)" width="100px" required="true" default=""/>
         <param field="Mode2" label="Open Window Sensors (csv list of idx)" width="100px" required="false" default=""/>
         <param field="Mode3" label="Thermostat Radiator Valves (csv list of idx)" width="100px" required="true" default=""/>
-        <param field="Mode4" label="High/Low/Pause/Precision Temperatures" width="200px" required="true" default="21,20,5,0.5,2"/>
-        <param field="Mode5" label="Calc. interval, Pause On delay, Pause Off delay, Sensor Timeout (all in minutes)" width="200px" required="true" default="10,1,10,90"/>
+        <param field="Mode4" label="High/Low/Pause/TRV prec/Sensor prec/Max shift" width="200px" required="true" default="21,20,5,0.5,0.1,2"/>
+        <param field="Mode5" label="Calc. interval, Pause On delay, Pause Off delay, Sensor Timeout (all in minutes)" width="200px" required="true" default="3,1,10,90"/>
         <param field="Mode6" label="PID Params P/I/D/Debug/E/C" width="200px" required="true" default="0.9,0.10,0.2,1,1,1"/>
     </params>
 </plugin>
@@ -65,7 +65,8 @@ class BasePlugin:
         
         self.high_temp = 21.0
         self.low_temp = 20.0 
-        self.prec_temp = 0.5 
+        self.trv_prec_temp = 0.5
+        self.sensor_prec_temp = 0.1
         self.max_shift = 2.0 
 
 
@@ -112,12 +113,13 @@ class BasePlugin:
         pid_params = parseCSV(Parameters["Mode6"], 'pid_params', 'float')
         self.check_params(pid_params, 6, "pid_params")
         
-        if len(temp_params) == 5:
+        if len(temp_params) == 6:
             self.high_temp = temp_params[0]
             self.low_temp = temp_params[1]
             self.pause_temp = temp_params[2]
-            self.prec_temp = temp_params[3]
-            self.max_shift = temp_params[4]
+            self.trv_prec_temp = temp_params[3]
+            self.sensor_prec_temp = temp_params[4]
+            self.max_shift = temp_params[5]
         else:
             domoticz.Error("Error reading Mode4 parameters")
             
@@ -126,9 +128,9 @@ class BasePlugin:
         if len(time_params) == 4:
             self.calculate_period = time_params[0]
             
-            if self.calculate_period < 5:
-                domoticz.Error("Invalid calculation period parameter. Using minimum of 5 minutes !")
-                self.calculate_period = 5
+            if self.calculate_period < 3:
+                domoticz.Error("Invalid calculation period parameter. Using minimum of 3 minutes !")
+                self.calculate_period = 3
            
             self.pause_on_delay = time_params[1]
             self.pauseoffdelay = time_params[2]
@@ -334,19 +336,31 @@ class BasePlugin:
             # TODO: implement sensors timeout -> switch to TRV only sensor
             current_temp = self.get_current_temp()
 
-            if abs(current_temp - self.Internals["target_temp"]) <= self.prec_temp/2.0:
-                if current_temp - self.Internals["target_temp"] <= 0.0:
-                    domoticz.Debug("Skipping calc - current_temp {}, target_temp {}, prec ".format(current_temp, self.Internals["target_temp"], self.prec_temp))
-                    
-                    self.last_calc = now
-                    self.next_calc = now + timedelta(minutes=self.calculate_period)
-                    return
-                else:
-                    current_temp = round(self.Internals["target_temp"] + self.prec_temp, 1)
+            if abs(current_temp - self.Internals["target_temp"]) <= self.sensor_prec_temp * 2.0:
+                
+                domoticz.Debug("Skipping calc - current_temp {}, target_temp {}, prec ".format(current_temp, self.Internals["target_temp"], self.sensor_prec_temp))
+                
+                self.last_calc = now
+                self.next_calc = now + timedelta(minutes=self.calculate_period)
+                return
+                
             
             # PID    
             elif self.shift_calc_mode == 1: # PID
+            
                 error = round(self.Internals["target_temp"] - current_temp, 2)
+                
+                if abs(self.Internals["current_delta"]) == self.max_shift:
+                    
+                    if (self.Internals["current_delta"] < 0 and error < 0 and error <= self.Internals["previous_error"]) or \
+                        (self.Internals["current_delta"] > 0 and error > 0 and error >= self.Internals["previous_error"]):
+                    
+                        self.last_calc = now
+                        self.next_calc = now + timedelta(minutes=self.calculate_period)
+                        domoticz.Log("Skipping calc - max_shift reached")
+                        return
+                
+                
                 self.Internals["integral"] = round(self.Internals["integral"] + error, 2)
                 derivative = round(error - self.Internals["previous_error"], 2)
                 
@@ -354,7 +368,16 @@ class BasePlugin:
                 pid_i = round(self.Ki * self.Internals["integral"], 2)
                 pid_d = round(self.Kd * derivative, 2)
                 
-                self.Internals["current_delta"] = round(pid_p + pid_i + pid_d, 1)
+                temp_shift = round(pid_p + pid_i + pid_d, 1)
+                    
+                if abs(temp_shift) > self.max_shift:
+                
+                    if temp_shift > 0:
+                        temp_shift = self.max_shift
+                    else:
+                        temp_shift = -1.0 * self.max_shift
+                
+                self.Internals["current_delta"] = temp_shift
                 self.Internals["previous_error"] = error
 
                 domoticz.Debug("PID current_temp {}, target_temp {}, temp_shift {}, p {}, i {}, d {}".format(current_temp, self.Internals["target_temp"], self.Internals["current_delta"], error, self.Internals["integral"], derivative))
@@ -362,6 +385,14 @@ class BasePlugin:
             elif self.shift_calc_mode == 2: # simple delta
             
                 temp_shift = round(self.Internals["target_temp"] - current_temp, 1)
+                
+                if abs(temp_shift) > self.max_shift:
+                
+                    if temp_shift > 0:
+                        temp_shift = self.max_shift
+                    else:
+                        temp_shift = -1.0 * self.max_shift
+                    
                 self.Internals["current_delta"] = temp_shift
                 
                 domoticz.Debug("SD current_temp {}, temp_shift {}".format(current_temp, temp_shift))
@@ -483,13 +514,13 @@ class BasePlugin:
         for i_trv_dev in self.radiators:
             v_data = self.get_valve_data(i_trv_dev)
             
-            if force is True or abs(temp + shift - v_data[0]) >= self.prec_temp: # or abs(shift - v_data[1]) > self.prec_temp:
-                domoticz.Log("set_target_temp - idx {} c_stp {} c_shift {} targ {} shift {} prec {} trv_mode {}".format(i_trv_dev, v_data[0], v_data[1], temp, shift, self.prec_temp, self.trv_control))
+            if force is True or abs(temp + shift - v_data[0]) >= self.trv_prec_temp: # or abs(shift - v_data[1]) > self.prec_temp:
+                domoticz.Log("set_target_temp - idx {} c_stp {} c_shift {} targ {} shift {} prec {} trv_mode {}".format(i_trv_dev, v_data[0], v_data[1], temp, shift, self.trv_prec_temp, self.trv_control))
                 self.set_valve_temp(i_trv_dev, target_temp=temp, shift_temp=shift)
                 max_next_update_time = v_data[2]
             
             else:
-                domoticz.Debug("Skipping set_target_temp - idx {} c_temp {} n_temp {} c_shift {} n_shift {} prec {}".format(i_trv_dev, v_data[0], temp, v_data[1], shift, self.prec_temp))
+                domoticz.Debug("Skipping set_target_temp - idx {} c_temp {} n_temp {} c_shift {} n_shift {} prec {}".format(i_trv_dev, v_data[0], temp, v_data[1], shift, self.trv_prec_temp))
           
         
         return max_next_update_time 
