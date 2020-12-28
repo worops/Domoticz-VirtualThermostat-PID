@@ -47,10 +47,11 @@ Example: 9,11
 * High - temperature (in C) during a day
 * Low - temperature (in C) during a night
 * Pause - temperature (in C) used when windows are open or during Pause mode (antifreeze)
-* Precision - precision of sensor or valve set point (in C) - this parameter prevent too frequent changes  and adds kind of histeresis
+* TRV Prec - precision of  valve set point (in C) - this parameter prevent too frequent changes and adds kind of histeresis
+* Sensor Prec - precision of sensor (in C) - this parameter adds histeresis when sensor temperature is near the target
 * Max shift - highest accepted difference between set point and target temperatur (High/Low)
 
-Example: 21.0,20.0,5.0,0.5,2.0
+Example: 21.0,20.0,5.0,0.5,0.1,3.0
 
 ### Calc. interval, Pause On delay, Pause Off delay, Sensor Timeout (all in minutes):
 * Calc. interval - time between calculation of PID shift
@@ -58,7 +59,7 @@ Example: 21.0,20.0,5.0,0.5,2.0
 * Pause Off delay - time between closing a window and virtual thermostat switching  to previous mode (Normal/Economic)
 * Sensor Timeout - when temperature sensors are not responding - virtual thermostat will use only an internal TRV temperature sensor (not implemented)
 
-Example: 10,1,10,90
+Example: 3,1,10,90
 
 ### PID Params P/I/D/Debug/E/C:
 * Kp - proportional factor
